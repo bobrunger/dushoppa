@@ -7,6 +7,7 @@ namespace Application;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
+use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
 return [
     'router' => [
@@ -55,7 +56,8 @@ return [
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            // Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => ReflectionBasedAbstractFactory::class,
             Controller\AboutController::class => InvokableFactory::class,
             Controller\ContactController::class => InvokableFactory::class,
         ],
@@ -74,6 +76,12 @@ return [
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            Model\ProductTable::class => Model\ProductTableFactory::class
+            //Controller\IndexController::class => ReflectionBasedAbstractFactory::class
         ],
     ],
 ];

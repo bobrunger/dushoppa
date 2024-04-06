@@ -1,0 +1,52 @@
+2024-04-05 07:04:24: Container test: Array
+(
+    [0] => foo
+    [1] => bar
+)
+
+2024-04-05 07:04:44: Container test: Array
+(
+    [0] => foo
+    [1] => bar
+)
+
+2024-04-05 22:49:27: Container test: Array
+(
+    [0] => foo
+    [1] => bar
+)
+
+2024-04-05 22:49:33: Container test: Array
+(
+    [0] => foo
+    [1] => bar
+)
+
+2024-04-05 22:58:03: Container test: Array
+(
+    [1] => 1
+)
+
+2024-04-05 22:59:24: Container test: Array
+(
+    [1] => 2
+)
+
+2024-04-05 22:59:24: Container test: Array
+(
+    [1] => 3
+)
+
+2024-04-05 22:59:27: Container test: Array
+(
+    [1] => 3
+    [3] => 1
+)
+
+2024-04-05 22:59:29: Container test: Array
+(
+    [1] => 3
+    [3] => 1
+    [2] => 1
+)
+

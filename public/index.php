@@ -25,6 +25,9 @@ include __DIR__ . '/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+//syntatic sugar helper functions, dev only
+include __DIR__ . '/../Utilities/functions.php';
+
 if (!class_exists(Application::class)) {
     throw new RuntimeException(
         "Unable to load application.\n"

@@ -24,6 +24,7 @@ class ProductTable
     public function getProduct($id)
     {
         $id = (int) $id;
+        /** @var \Laminas\Db\ResultSet\ResultSet $rowset */
         $rowset = $this->tableGateway->select(['id' => $id]);
         $row = $rowset->current();
         if (!$row) {

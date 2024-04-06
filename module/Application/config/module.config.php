@@ -9,6 +9,7 @@ use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
+
 return [
     'router' => [
         'routes' => [
@@ -42,6 +43,26 @@ return [
                     ],
                 ],
             ],
+            'cart' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/cart[/:action]',
+                    'defaults' => [
+                        'controller' => Controller\CartController::class,
+                        'action'     => 'add',
+                    ],
+                ],
+            ],
+            'cart-view' => [
+                'type'    => Literal::class,
+                'options' => [
+                    'route'    => '/cart/view',
+                    'defaults' => [
+                        'controller' => Controller\CartController::class,
+                        'action'     => 'view',
+                    ],
+                ],
+            ],
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
@@ -57,9 +78,11 @@ return [
     'controllers' => [
         'factories' => [
             // Controller\IndexController::class => InvokableFactory::class,
+            // since IndexController consttructor has ProductTable parameter, the factory will instantiate Product table instance and pass it to the IndexController
             Controller\IndexController::class => ReflectionBasedAbstractFactory::class,
             Controller\AboutController::class => InvokableFactory::class,
             Controller\ContactController::class => InvokableFactory::class,
+            Controller\CartController::class => ReflectionBasedAbstractFactory::class,
         ],
     ],
     'view_manager' => [
@@ -80,8 +103,10 @@ return [
     ],
     'service_manager' => [
         'factories' => [
-            Model\ProductTable::class => Model\ProductTableFactory::class
+            Model\ProductTable::class => Model\ProductTableFactory::class,
             //Controller\IndexController::class => ReflectionBasedAbstractFactory::class
+            //Controller\CartController::class => ReflectionBasedAbstractFactory::class,
+
         ],
     ],
 ];

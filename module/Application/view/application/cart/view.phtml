@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @var Laminas\View\Renderer\PhpRenderer $this
+ */
+?>
+<style>
+    .cart-item {
+        height: auto;
+        /* Changed to auto for dynamic height adjustment */
+    }
+
+    .cart-img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .cart-row {
+        border-bottom: 1px solid #e1e1e1;
+    }
+
+    .cart-footer {
+        font-weight: bold;
+    }
+
+    .product-name {
+        margin-left: 10px;
+    }
+
+    .text-start-sm {
+        text-align: start;
+        /* New class for text alignment on small screens and up */
+    }
+
+    @media (min-width: 576px) {
+        .text-start-sm {
+            text-align: left;
+        }
+    }
+
+    /* Override Bootstrap's padding */
+    .p-0 {
+        padding: 0 !important;
+    }
+</style>
+<h1>Your Cart</h1>
+<div class="container">
+    <div class="row d-flex flex-sm-row justify-content-start">
+        <div class="col-3">
+            <h6 class="h6 text-start">PRODUCT</h6>
+        </div>
+        <div class="col-3 d-none d-sm-block">
+            <h6 class="h6 text-start">PRICE/PCS</h6>
+        </div>
+        <div class="col-3">
+            <h6 class="h6 text-start">QUANTITY</h6>
+        </div>
+        <div class="col-3">
+            <h6 class="h6 text-start">AMOUNT</h6>
+        </div>
+    </div>
+    <!-- Cart Items -->
+    <div id="cart-items">
+        <?php if (!empty($this->cart)) : ?>
+            <?php foreach ($this->cart as $key => $value) : ?>
+                <div class="row py-2 cart-item cart-row align-items-start">
+                    <div class="col d-flex align-items-center">
+                        <img src="<?php echo $value["productImage"]; ?>" class="cart-img mr-2 d-none d-sm-block">
+                        <span class="product-name text-capitalize text-start-sm"><?php echo $value["productName"]; ?></span>
+                    </div>
+                    <div class="col d-flex align-items-center d-none d-sm-flex justify-content-start">
+                        <span class="text-start-sm"><?php echo $value["productPrice"]; ?> kr</span>
+                    </div>
+                    <div class="col d-flex align-items-center justify-content-start">
+                        <span class="text-start-sm"><?php echo $value["productQty"]; ?></span>
+                    </div>
+                    <div class="col d-flex align-items-center justify-content-start">
+                        <span class="text-start-sm"><?php echo $value["productTotalPrice"]; ?> kr</span>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <p>Your cart is empty.</p>
+        <?php endif; ?>
+    </div>
+
+    <!-- Cart Footer -->
+    <div class="row mt-3 cart-footer align-items-start">
+        <div class="col-6">
+            <h5 class="text-start">Total</h5>
+        </div>
+        <div class="col-6">
+            <!-- Total amount placeholder -->
+            <h5 class="text-start">DKK 677</h5>
+        </div>
+    </div>
+</div>

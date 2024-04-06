@@ -7,6 +7,7 @@ namespace Application\Controller;
 use Application\Model\ProductTable;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\View\Model\ViewModel;
+use Laminas\Session\Container;
 
 class IndexController extends AbstractActionController
 {

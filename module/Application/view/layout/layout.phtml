@@ -26,7 +26,9 @@
         ->prependStylesheet($this->basePath('css/bootstrap.min.css'))
     ?>
     <!-- Scripts -->
-    <?= $this->headScript() ?>
+
+    <?= $this->headScript()->appendFile($this->basePath() . '/js/customjs.js');  ?>
+
 </head>
 
 <body>

@@ -61,7 +61,7 @@ class CartController extends AbstractActionController
         $cart = new Container('cart');
         $productTable = $this->productTable;
         $cartProducts = [];
-
+        //a
         //dd($cart->items);
 
         foreach ($cart->items as $productId => $qty) { // grab product id and quantity from session

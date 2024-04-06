@@ -63,7 +63,7 @@ class CartController extends AbstractActionController
         $cartProducts = [];
         //a
         //dd($cart->items);
-
+        //b
         foreach ($cart->items as $productId => $qty) { // grab product id and quantity from session
             try {
                 /** @var \Application\Model\Product $product */

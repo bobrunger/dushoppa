@@ -47,9 +47,12 @@ return [
                 'type'    => Segment::class,
                 'options' => [
                     'route'    => '/cart[/:action]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
                     'defaults' => [
                         'controller' => Controller\CartController::class,
-                        'action'     => 'add',
+                        'action'     => 'view',
                     ],
                 ],
             ],

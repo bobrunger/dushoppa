@@ -30,7 +30,7 @@
             <div class="card mb-4 shadow-sm">
                 <img class="bd-placeholder-img card-img-top" src="<?php echo $this->escapeHtml($product->image); ?>" alt="<?php echo $this->escapeHtml($product->name); ?>">
                 <div class="card-body">
-                    <h2 class="card-title text-capitalize"><?php echo $this->escapeHtml($product->name); ?></h2>
+                    <h2 class="card-title text-capitalize"><?php echo $this->escapeHtml(mb_strimwidth($product->name, 0, 10, "...")); ?></h2>
                     <p class="card-text"><?php echo $this->escapeHtml($product->description); ?></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">

@@ -42,6 +42,20 @@ class CartController extends AbstractActionController
         return $this->getResponse()->setContent("Product with id {$productId} added to cart");
     }
 
+    public function removeAction()
+    {
+        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
+
+        $cart = new Container('cart');
+
+        if (isset($cart->items[$productId])) {
+            unset($cart->items[$productId]);
+        }
+
+
+        return $this->getResponse()->setContent("Product with id {$productId} removed from cart");
+    }
+
     public function viewAction()
     {
         $cart = new Container('cart');
@@ -62,7 +76,7 @@ class CartController extends AbstractActionController
                     'productPrice' => $product->price,
                     'productImage' => $product->image,
                     'productQty' => $qty,
-                    'productTotalPrice' => $product->price * $qty
+                    'productTotalRowPrice' => $product->price * $qty
                 ];
             } catch (\Exception $e) {
                 throw new Exception("error loading products {$e->getMessage()}");

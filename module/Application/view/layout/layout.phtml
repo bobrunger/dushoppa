@@ -25,6 +25,10 @@
         ->prependStylesheet($this->basePath('css/style.css'))
         ->prependStylesheet($this->basePath('css/bootstrap.min.css'))
     ?>
+    <?= $this->headLink([
+        'rel' => 'stylesheet',
+        'href' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'
+    ]) ?>
     <!-- Scripts -->
 
     <?= $this->headScript()->appendFile($this->basePath() . '/js/customjs.js');  ?>
@@ -47,6 +51,19 @@
                         <a class="nav-link active" aria-current="page" href="<?= $this->url('home') ?>">Home
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="<?= $this->url('cart-view') ?>">
+                            <i class="fas fa-shopping-basket"></i>
+                            <?php
+                            // Hard-coded value for the number of items in the basket
+                            $basketItemCount = 5;
+                            if ($basketItemCount > 0) {
+                                echo "<span>$basketItemCount</span>";
+                            }
+                            ?>
+                        </a>
+                    </li>
+
                 </ul>
             </div>
         </div>

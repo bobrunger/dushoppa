@@ -129,7 +129,7 @@ class CartController extends AbstractActionController
             }
         }
         $miniCartProducts->items = $miniCart;
-        sleep(3);
+        //sleep(3);
 
         return $this->getResponse()->setContent(json_encode($miniCart));
     }

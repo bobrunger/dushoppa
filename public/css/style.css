@@ -15,3 +15,24 @@
 .navbar li.active a {
     color: var(--bs-navbar-active-color);
 }
+
+.minicart-table {
+    width: 100%;
+}
+
+.minicart-table th,
+.minicart-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.minicart-table img {
+    border-radius: 5px;
+}
+
+@media (min-width: 768px) {
+    .minicart-dropdown {
+        width: 560px;
+        /* or you can use percentage like 100% */
+    }
+}

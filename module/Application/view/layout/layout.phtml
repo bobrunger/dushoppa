@@ -34,32 +34,7 @@
     <?= $this->headScript()->appendFile($this->basePath() . '/js/customjs.js');  ?>
 
 </head>
-<style>
 
-</style>
-
-<style>
-    .minicart-table {
-        width: 100%;
-    }
-
-    .minicart-table th,
-    .minicart-table td {
-        padding: 10px;
-        text-align: left;
-    }
-
-    .minicart-table img {
-        border-radius: 5px;
-    }
-
-    @media (min-width: 768px) {
-        .minicart-dropdown {
-            width: 560px;
-            /* or you can use percentage like 100% */
-        }
-    }
-</style>
 
 <body>
     <nav class="navbar navbar-expand-md navbar-dark mb-4" role="navigation">
@@ -73,24 +48,25 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="<?= $this->url('home') ?>">Home
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="<?= $this->url('about') ?>">About
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="<?= $this->url('home') ?>">Home
+                        <a class="nav-link active" aria-current="page" href="<?= $this->url('contact') ?>">Contact us
                         </a>
                     </li>
+
                     <li class="nav-item dropdown" onclick='viewMiniCart()'>
                         <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-shopping-basket"></i>
                             <?php
-                            $basketItemCount = 0;
-                            //dd($miniCartProducts);
-                            foreach ($miniCartProducts as $productArrary => $product) {
-                                $basketItemCount += $product["miniQty"];
-                            }
-                            echo "<span id='cart-counter'>$basketItemCount</span>";
+                            echo "<span id='cart-counter'>$cartCount</span>";
                             ?>
                         </a>
                         <ul id="dynamicDropDown" class="dropdown-menu dropdown-menu-end minicart-dropdown" aria-labelledby="cartDropdown">
@@ -127,7 +103,7 @@
                                             <tr class="border-bottom">
                                                 <td><img src="<?= $product["miniImage"] ?>" alt="<?= $product["miniName"] ?>" style="width: 50px; height: 50px;"></td>
                                                 <td class="text-capitalize"><?= $product["miniName"] ?></td>
-                                                <td><?= $product["miniQty"] ?></td>
+                                                <td>+<?= $product["miniQty"] ?>-</td>
                                                 <td><?= $product["miniPrice"] ?> kr</td>
                                             </tr>
                                         <?php endforeach; ?>

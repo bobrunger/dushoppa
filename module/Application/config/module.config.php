@@ -46,20 +46,10 @@ return [
             'cart' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/cart[/:action]',
+                    'route'    => '/cart[/:action][/]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ],
-                    'defaults' => [
-                        'controller' => Controller\CartController::class,
-                        'action'     => 'view',
-                    ],
-                ],
-            ],
-            'cart-view' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/cart/view',
                     'defaults' => [
                         'controller' => Controller\CartController::class,
                         'action'     => 'view',
@@ -107,6 +97,7 @@ return [
     'service_manager' => [
         'factories' => [
             Model\ProductTable::class => Model\ProductTableFactory::class,
+            Listener\LayoutListener::class => InvokableFactory::class,
             //Controller\IndexController::class => ReflectionBasedAbstractFactory::class
             //Controller\CartController::class => ReflectionBasedAbstractFactory::class,
 

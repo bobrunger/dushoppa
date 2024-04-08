@@ -22,6 +22,7 @@ class IndexController extends AbstractActionController
     {
         try {
             $products = $this->productTable->fetchAll();
+
             return new ViewModel(['products' => $products]);
         } catch (\Exception $e) {
             var_dump($e->getMessage());

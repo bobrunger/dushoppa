@@ -25,6 +25,7 @@ class CartController extends AbstractActionController
 
         // create a session container for cart
         $cart = new Container('cart');
+
         if (!isset($cart->items)) {
             $cart->items = [];
         }
@@ -39,7 +40,8 @@ class CartController extends AbstractActionController
         // writeToLog('Container test: ' . print_r($cart->items, true));
 
         // no render since its AJAX call
-        return $this->getResponse()->setContent("Product with id {$productId} added to cart");
+        //return $this->getResponse()->setContent("Product with id {$productId} added to cart");
+        return $this->getResponse()->setContent(json_encode($cart->items));
     }
 
     public function removeAction()
@@ -47,9 +49,16 @@ class CartController extends AbstractActionController
         $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
 
         $cart = new Container('cart');
-
+        $miniCart = new Container('minicart');
         if (isset($cart->items[$productId])) {
             unset($cart->items[$productId]);
+        }
+
+        foreach ($miniCart->items as $key => $item) {
+            if ($item['miniId'] == $productId) {
+                unset($miniCart->items[$key]);
+                break;
+            }
         }
 
 
@@ -79,11 +88,49 @@ class CartController extends AbstractActionController
                     'productTotalRowPrice' => $product->price * $qty
                 ];
             } catch (\Exception $e) {
-                throw new Exception("error loading products {$e->getMessage()}");
+                //throw new Exception("error loading products {$e->getMessage()}");
+                // Log the error or add it to the errors array
+                $errors[] = "Error loading product with id {$productId}: {$e->getMessage()}";
+
+                // Remove the non-existing product from the cart
+                unset($cart->items[$productId]);
+                writeToLog($errors);
             }
         }
         //dd($cartProducts);
 
         return new ViewModel(['cart' => $cartProducts]); // $this->cart , first argument is variable name
+    }
+
+
+    public function minicartAction()
+    {
+        $cart = new Container('cart');
+        $miniCartProducts = new Container('minicart');
+        if (!isset($miniCartProducts->items)) {
+            $miniCartProducts->items = [];
+        }
+        $miniCart = [];
+        foreach ($cart->items as $productId => $qty) {
+            try {
+                /** @var \Application\Model\Product $product */
+                $product = $this->productTable->getProduct($productId);
+                $miniCart[] = [
+                    'miniId' => $product->id,
+                    'miniQty' => $qty,
+                    'miniName' => $product->name,
+                    'miniPrice' => $product->price,
+                    'miniImage' => $product->image,
+                ];
+            } catch (\Exception $e) {
+                $errors[] = "Error loading product with id {$productId}: {$e->getMessage()}";
+                unset($cart->items[$productId]);
+                writeToLog($errors);
+            }
+        }
+        $miniCartProducts->items = $miniCart;
+        sleep(3);
+
+        return $this->getResponse()->setContent(json_encode($miniCart));
     }
 }

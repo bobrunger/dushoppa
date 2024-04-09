@@ -44,6 +44,36 @@ class CartController extends AbstractActionController
         return $this->getResponse()->setContent(json_encode($cart->items));
     }
 
+    public function removeOneAction()
+    {
+        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
+
+
+        $cart = new Container('cart');
+        $miniCart = new Container('minicart');
+        if (!isset($cart->items)) {
+            $cart->items = [];
+        }
+        if (isset($cart->items[$productId])) {
+            if ($cart->items[$productId] >= 0)
+                $cart->items[$productId]--;
+            else
+                unset($cart->items[$productId]);
+        }
+
+        foreach ($miniCart->items as $key => $item) {
+            if ($item['miniId'] == $productId) {
+                if ($item['miniQty'] >= 0)
+                    $item['miniQty']--;
+                else
+                    unset($miniCart->items[$key]);
+                break;
+            }
+        }
+
+        return $this->getResponse()->setContent(json_encode($cart->items));
+    }
+
     public function removeAction()
     {
         $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1

@@ -20,6 +20,13 @@
     width: 100%;
 }
 
+.mini-add{
+    color: #d1b06c; 
+    padding: 0 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 .minicart-table th,
 .minicart-table td {
     padding: 10px;

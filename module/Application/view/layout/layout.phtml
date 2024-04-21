@@ -62,7 +62,7 @@
                         </a>
                     </li>
 
-                    <li class="nav-item dropdown" onclick='viewMiniCart()'>
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                             <i class="fas fa-shopping-basket"></i>
                             <?php
@@ -70,48 +70,46 @@
                             ?>
                         </a>
                         <ul id="dynamicDropDown" class="dropdown-menu dropdown-menu-end minicart-dropdown" aria-labelledby="cartDropdown">
-                            <li><a class="dropdown-item btn bg-warning text-center" href="<?= $this->url('cart') ?>">View Cart</a></li> <?php if (empty($miniCartProducts)) : ?>
-
-                                <table class="minicart-table">
-                                    <thead>
-                                        <tr class="border-bottom">
-                                            <th></th>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-
-                                    </tbody>
-                                </table>
-                            <?php else : ?>
-                                <table class="minicart-table">
-                                    <thead>
-                                        <tr class="border-bottom">
-                                            <th></th>
-                                            <th>Product</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($miniCartProducts as $productArrary => $product) : ?>
-                                            <tr class="border-bottom">
-                                                <td><img src="<?= $product["miniImage"] ?>" alt="<?= $product["miniName"] ?>" style="width: 50px; height: 50px;"></td>
-                                                <td class="text-capitalize"><?= $product["miniName"] ?></td>
-                                                <td>+<?= $product["miniQty"] ?>-</td>
-                                                <td><?= $product["miniPrice"] ?> kr</td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php endif; ?>
-
                             <li><a class="dropdown-item btn bg-warning text-center" href="<?= $this->url('cart') ?>">View Cart</a></li>
+
+                            <table class="minicart-table" id="cart-table">
+                                <thead>
+                                    <tr class="border-bottom">
+                                        <th></th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <?php if (empty($miniCart)) : ?>
+                                        <div id="deleteOnRefresh" class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                                            <div class="alert alert-warning" role="alert">
+                                                Your cart is empty
+                                            </div>
+                                        </div>
+
+
+                                </tbody>
+                            </table>
+                        <?php else : ?>
+
+                            <?php foreach ($miniCart as $id => $product) : ?>
+                                <tr class="border-bottom">
+                                    <td><img src="<?= $product["productImage"] ?>" alt="<?= $product["productName"] ?>" style="width: 50px; height: 50px;"></td>
+                                    <td class="text-capitalize"><?= $product["productName"] ?></td>
+                                    <td><span class="mini-add" onclick="addToCart(<?= $this->escapeHtml($product['productId']); ?>)">+</span><?= $product["productQty"] ?><span class="mini-add" onclick="removeOne(<?= $this->escapeHtml($product['productId']); ?>)">-</span></td>
+                                    <td><?= $product["productTotalRowPrice"] ?> kr</td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                            </table>
+
+                        <?php endif; ?>
+
+                        <li><a class="dropdown-item btn bg-warning text-center" href="<?= $this->url('cart') ?>">View Cart</a></li>
                         </ul>
                     </li>
 
@@ -131,7 +129,6 @@
     </div>
     <?= $this->inlineScript()
         ->prependFile('https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js')
-        ->prependFile('https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js')
     // ->prependFile($this->basePath('js/bootstrap.min.js')) 
     ?>
 </body>

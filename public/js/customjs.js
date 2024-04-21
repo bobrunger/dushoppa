@@ -9,11 +9,68 @@ function addToCart(productId) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      // Get the table body
+      let tbody = document.querySelector("#cart-table tbody");
+      let element = document.getElementById("deleteOnRefresh");
+      if (element) {
+        element.remove();
+      }
+
+      tbody.innerHTML = "";
+      let miniCart = data.cart;
+
+      // Add the updated rows
+      for (let id in miniCart) {
+        let product = miniCart[id];
+        let tr = document.createElement("tr");
+        tr.classList.add("border-bottom");
+
+        tr.innerHTML = `
+          <td><img src="${product.productImage}" alt="${product.productName}" style="width: 50px; height: 50px;"></td>
+          <td class="text-capitalize">${product.productName}</td>
+          <td><span class='mini-add' onclick='addToCart(${product.productId})'>+</span>${product.productQty}<span class='mini-add' onclick='removeOne(${product.productId})'>-</span></td>
+          <td>${product.productTotalRowPrice} kr</td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+
+      console.log(data.cart);
       console.log("ajax done  Product with id " + productId + " added to cart");
 
       let counter = document.getElementById("cart-counter");
       counter.textContent = parseInt(counter.textContent) + 1;
+
+      // Create a Bootstrap Toast
+      let toast = document.createElement("div");
+      toast.classList.add(
+        "toast",
+        "text-white",
+        "p-3",
+        "position-fixed",
+        "bottom-0",
+        "start-0",
+        "m-3"
+      );
+      toast.style.backgroundColor = "rgba(40, 167, 69, 0.75)"; // bg-success color with 75% opacity
+      toast.setAttribute("role", "alert");
+      toast.setAttribute("aria-live", "assertive");
+      toast.setAttribute("aria-atomic", "true");
+      toast.setAttribute("data-bs-delay", "2000");
+      toast.innerHTML = `
+        <div class="toast-body">
+          ${data.msg}
+        </div>
+      `;
+
+      document.body.appendChild(toast);
+
+      // Show the toast and remove it after it hides
+      let bsToast = new bootstrap.Toast(toast);
+      bsToast.show();
+      toast.addEventListener("hidden.bs.toast", function () {
+        document.body.removeChild(toast);
+      });
     })
     .catch((error) => {
       console.error("Error adding product to cart: ", error);
@@ -32,7 +89,7 @@ function removeCartItem(productId) {
     })
     .then((data) => {
       console.log(
-        "ajax done  Product with id " + productId + " removed from cart"
+        "remove whole done  Product with id " + productId + " removed from cart"
       );
       location.reload();
     })
@@ -42,7 +99,7 @@ function removeCartItem(productId) {
 }
 
 function removeOne(productId) {
-  console.log("removing from minicart ", productId);
+  console.log("removing one from cart ", productId);
   fetch("/cart/removeOne?productId=" + productId)
     .then((response) => {
       if (!response.ok) {
@@ -52,110 +109,72 @@ function removeOne(productId) {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
+      console.log(data.cart);
+
+      let tbody = document.querySelector("#cart-table tbody");
+      let element = document.getElementById("deleteOnRefresh");
+      if (element) {
+        element.style.display = "none !important";
+      }
+
+      tbody.innerHTML = "";
+      let miniCart = data.cart;
+
+      // Add the updated rows
+      for (let id in miniCart) {
+        let product = miniCart[id];
+        let tr = document.createElement("tr");
+        tr.classList.add("border-bottom");
+
+        tr.innerHTML = `
+          <td><img src="${product.productImage}" alt="${product.productName}" style="width: 50px; height: 50px;"></td>
+          <td class="text-capitalize">${product.productName}</td>
+          <td><span class='mini-add' onclick='addToCart(${product.productId})'>+</span>${product.productQty}<span class='mini-add' onclick='removeOne(${product.productId})'>-</span></td>
+          <td>${product.productTotalRowPrice} kr</td>
+        `;
+
+        tbody.appendChild(tr);
+      }
+
       console.log(
-        "ajax done  Product with id " + productId + " removed from cart"
+        "remove one done  Product with id " + productId + " added to cart"
       );
 
       let counter = document.getElementById("cart-counter");
       counter.textContent = parseInt(counter.textContent) - 1;
+
+      // Create a Bootstrap Toast
+      let toast = document.createElement("div");
+      toast.classList.add(
+        "toast",
+        "text-white",
+        "p-3",
+        "position-fixed",
+        "bottom-0",
+        "start-0",
+        "m-3"
+      );
+      toast.style.backgroundColor = "rgba(255, 0, 0, 0.75)";
+      toast.setAttribute("role", "alert");
+      toast.setAttribute("aria-live", "assertive");
+      toast.setAttribute("aria-atomic", "true");
+      toast.setAttribute("data-bs-delay", "2000");
+      toast.innerHTML = `
+        <div class="toast-body">
+          ${data.msg}
+        </div>
+      `;
+
+      document.body.appendChild(toast);
+
+      // Show the toast and remove it after it hides
+      let bsToast = new bootstrap.Toast(toast);
+      bsToast.show();
+      toast.addEventListener("hidden.bs.toast", function () {
+        document.body.removeChild(toast);
+      });
     })
     .catch((error) => {
-      console.error("Error removing one product from cart: ", error);
-    });
-}
-
-function viewMiniCart() {
-  const miniCartTable = document.querySelector(".minicart-table tbody");
-  if (!miniCartTable) {
-    console.error("Mini cart table not found");
-    return;
-  }
-
-  // Create spinner
-  const spinner = document.createElement("div");
-  spinner.className = "spinner-border";
-  spinner.role = "status";
-  const spinnerText = document.createElement("span");
-  spinnerText.className = "sr-only";
-  spinnerText.textContent = "Loading...";
-  spinner.appendChild(spinnerText);
-
-  // Append spinner to miniCartTable
-  miniCartTable.appendChild(spinner);
-
-  fetch("/cart/minicart")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      miniCartTable.innerHTML = ""; // Clear the existing table content
-
-      if (data.length === 0) {
-        const emptyCartMessage = document.createElement("li");
-        emptyCartMessage.classList.add("dropdown-item");
-        emptyCartMessage.textContent = "Your cart is empty";
-        miniCartTable.parentNode.insertBefore(emptyCartMessage, miniCartTable);
-      } else {
-        data.forEach((product) => {
-          if (product.miniQty > 0) {
-            const row = document.createElement("tr");
-            row.classList.add("border-bottom");
-
-            const imgCell = document.createElement("td");
-            const img = document.createElement("img");
-            img.src = product.miniImage;
-            img.alt = product.miniName;
-            img.style.width = "50px";
-            img.style.height = "50px";
-            imgCell.appendChild(img);
-
-            const nameCell = document.createElement("td");
-            nameCell.classList.add("text-capitalize");
-            nameCell.textContent = product.miniName;
-
-            const qtyCell = document.createElement("td");
-            qtyCell.textContent = product.miniQty;
-            // Create "+" button
-            const addButton = document.createElement("button");
-            addButton.textContent = "+";
-            addButton.classList.add("px-2", "btn", "text-danger");
-            addButton.addEventListener("click", function () {
-              addToCart(product.miniId);
-            });
-            // Create "-" button
-            const removeButton = document.createElement("button");
-            removeButton.textContent = "-";
-            removeButton.classList.add("px-2", "btn", "text-danger");
-            removeButton.addEventListener("click", function () {
-              removeOne(product.miniId);
-            });
-
-            // Append buttons to qtyCell
-            $(qtyCell).prepend(addButton);
-            qtyCell.appendChild(removeButton);
-
-            const priceCell = document.createElement("td");
-            priceCell.textContent = `${product.miniPrice} kr`;
-
-            row.appendChild(imgCell);
-            row.appendChild(nameCell);
-            row.appendChild(qtyCell);
-            row.appendChild(priceCell);
-
-            miniCartTable.appendChild(row);
-          }
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("error loading mini cart: ", error);
-    })
-    .finally(() => {
-      // Remove spinner
-      spinner.remove();
+      console.error("Error removing product from cart: ", error);
     });
 }

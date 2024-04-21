@@ -22,94 +22,26 @@ class CartController extends AbstractActionController
     public function addAction()
     {
         $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
-
-        // create a session container for cart
         $cart = new Container('cart');
+        $productTable = $this->productTable;
+        $cartProducts = [];
+        $addedMsg = "";
 
         if (!isset($cart->items)) {
             $cart->items = [];
         }
 
-        //add product to a cart or increase its qty
         if (!isset($cart->items[$productId])) {
             $cart->items[$productId] = 1;
         } else {
             $cart->items[$productId]++;
         }
 
-        // writeToLog('Container test: ' . print_r($cart->items, true));
-
-        // no render since its AJAX call
-        //return $this->getResponse()->setContent("Product with id {$productId} added to cart");
-        return $this->getResponse()->setContent(json_encode($cart->items));
-    }
-
-    public function removeOneAction()
-    {
-        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
-
-
-        $cart = new Container('cart');
-        $miniCart = new Container('minicart');
-        if (!isset($cart->items)) {
-            $cart->items = [];
-        }
-        if (isset($cart->items[$productId])) {
-            if ($cart->items[$productId] >= 0)
-                $cart->items[$productId]--;
-            else
-                unset($cart->items[$productId]);
-        }
-
-        foreach ($miniCart->items as $key => $item) {
-            if ($item['miniId'] == $productId) {
-                if ($item['miniQty'] >= 0)
-                    $item['miniQty']--;
-                else
-                    unset($miniCart->items[$key]);
-                break;
-            }
-        }
-
-        return $this->getResponse()->setContent(json_encode($cart->items));
-    }
-
-    public function removeAction()
-    {
-        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
-
-        $cart = new Container('cart');
-        $miniCart = new Container('minicart');
-        if (isset($cart->items[$productId])) {
-            unset($cart->items[$productId]);
-        }
-
-        foreach ($miniCart->items as $key => $item) {
-            if ($item['miniId'] == $productId) {
-                unset($miniCart->items[$key]);
-                break;
-            }
-        }
-
-
-        return $this->getResponse()->setContent("Product with id {$productId} removed from cart");
-    }
-
-    public function viewAction()
-    {
-        $cart = new Container('cart');
-        $productTable = $this->productTable;
-        $cartProducts = [];
-        //a
-        //dd($cart->items);
-        //b
-        foreach ($cart->items as $productId => $qty) { // grab product id and quantity from session
+        foreach ($cart->items as $productId => $qty) {
             try {
                 /** @var \Application\Model\Product $product */
                 $product = $productTable->getProduct($productId);
-                // dd($product);
-                //dd($product->image);
-                $cartProducts[] = [
+                $cartProducts[$productId] = [
                     'productId' => $product->id,
                     'productName' => $product->name,
                     'productPrice' => $product->price,
@@ -117,50 +49,70 @@ class CartController extends AbstractActionController
                     'productQty' => $qty,
                     'productTotalRowPrice' => $product->price * $qty
                 ];
+                $addedMsg = "{$product->name} was added to cart";
             } catch (\Exception $e) {
-                //throw new Exception("error loading products {$e->getMessage()}");
-                // Log the error or add it to the errors array
                 $errors[] = "Error loading product with id {$productId}: {$e->getMessage()}";
-
-                // Remove the non-existing product from the cart
                 unset($cart->items[$productId]);
                 writeToLog($errors);
             }
         }
-        //dd($cartProducts);
 
-        return new ViewModel(['cart' => $cartProducts]); // $this->cart , first argument is variable name
+        $cart->products = $cartProducts;
+
+        $response = ["msg" => $addedMsg, "cart" => $cart->products];
+
+        return $this->getResponse()->setContent(json_encode($response));
     }
 
+    public function removeAction()
+    {
+        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
 
-    public function minicartAction()
+        $cart = new Container('cart');
+
+        if (isset($cart->items[$productId]))
+            unset($cart->items[$productId]);
+        if (isset($cart->products[$productId]))
+            unset($cart->products[$productId]);
+
+        return $this->getResponse()->setContent("Product with id {$productId} removed from cart");
+    }
+
+    public function removeOneAction()
+    {
+        $productId = $this->params()->fromQuery('productId'); // /add-to-cart?productId = 1
+
+        $cart = new Container('cart');
+        $productName = "";
+
+        if (isset($cart->items[$productId])) {
+            if ($cart->items[$productId] > 1)
+                $cart->items[$productId]--;
+            else
+                unset($cart->items[$productId]);
+        }
+        if (isset($cart->products[$productId])) {
+            $productName = $cart->products[$productId]['productName'];
+            if ($cart->products[$productId]["productQty"] > 1) {
+                $cart->products[$productId]["productQty"]--;
+                $cart->products[$productId]["productTotalRowPrice"] = $cart->products[$productId]["productQty"] * $cart->products[$productId]["productPrice"];
+            } else
+                unset($cart->products[$productId]);
+        }
+
+        $addedMsg = "{$productName} was removed from cart";
+        $response = ["msg" => $addedMsg, "cart" => $cart->products];
+
+        return $this->getResponse()->setContent(json_encode($response));
+    }
+
+    public function viewAction()
     {
         $cart = new Container('cart');
-        $miniCartProducts = new Container('minicart');
-        if (!isset($miniCartProducts->items)) {
-            $miniCartProducts->items = [];
-        }
-        $miniCart = [];
-        foreach ($cart->items as $productId => $qty) {
-            try {
-                /** @var \Application\Model\Product $product */
-                $product = $this->productTable->getProduct($productId);
-                $miniCart[] = [
-                    'miniId' => $product->id,
-                    'miniQty' => $qty,
-                    'miniName' => $product->name,
-                    'miniPrice' => $product->price,
-                    'miniImage' => $product->image,
-                ];
-            } catch (\Exception $e) {
-                $errors[] = "Error loading product with id {$productId}: {$e->getMessage()}";
-                unset($cart->items[$productId]);
-                writeToLog($errors);
-            }
-        }
-        $miniCartProducts->items = $miniCart;
-        //sleep(3);
 
-        return $this->getResponse()->setContent(json_encode($miniCart));
+        if (!isset($cart->products)) {
+            $cart->products = [];
+        }
+        return new ViewModel(['cart' => $cart->products]); // $this->cart , first argument is variable name
     }
 }

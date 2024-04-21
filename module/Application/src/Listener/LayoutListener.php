@@ -19,21 +19,18 @@ class LayoutListener extends AbstractListenerAggregate
     public function onDispatch(MvcEvent $event)
     {
         $viewModel = $event->getViewModel();
-        $miniCart = new Container('minicart');
-        $cartCount = new Container('cart');
-        $cartQty = 0;
-        if (!isset($miniCart->items)) {
-            $miniCart->items = [];
+        $cart = new Container('cart');
+        $cartCount = 0;
+
+        if (!isset($cart->products)) {
+            $cart->products = [];
         }
 
-        if (!isset($cartCount->items)) {
-            $cartCount->items = [];
-        }
-        foreach ($cartCount->items as $id => $qty) {
-            $cartQty += $qty;
+        foreach ($cart->products as $item => $product) {
+            $cartCount += $product["productQty"];
         }
 
-        $viewModel->setVariable('miniCartProducts', $miniCart->items); // cart products should be available in layout (header) as well as globally (eg about, contact us etc)
-        $viewModel->setVariable('cartCount', $cartQty);
+        $viewModel->setVariable('cartCount', $cartCount);
+        $viewModel->setVariable('miniCart', $cart->products);
     }
 }

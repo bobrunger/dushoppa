@@ -75,7 +75,7 @@ class CartController extends AbstractActionController
         if (isset($cart->products[$productId]))
             unset($cart->products[$productId]);
 
-        return $this->getResponse()->setContent("Product with id {$productId} removed from cart");
+        return $this->getResponse()->setContent(json_encode($cart->products));
     }
 
     public function removeOneAction()

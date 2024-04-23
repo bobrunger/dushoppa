@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Model;
 
 use RuntimeException;
-use Laminas\Db\TableGateway\TableGatewayInterface; // Add this line to import the missing class
+use Laminas\Db\TableGateway\TableGatewayInterface;
 
 class ProductTable
 {

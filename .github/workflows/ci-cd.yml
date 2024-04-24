@@ -30,23 +30,19 @@ jobs:
             --group-id sg-0739e6e8005beba1b \
             --protocol tcp \
             --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
             --source-group sg-0739e6e8005beba1b
-            
-      - name: Set up SSH key
+          
+      - name: SSH and deploy to EC2
         env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: |
           echo "$SSH_KEY" > dushoppaKey.pem
-          chmod 400 dushoppaKey.pem
-          
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo "heelo"
+          chmod 600 dushoppaKey.pem
+          ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem ${USERNAME}@${HOST}
+          cd /var/
             
       - name: Revoke runner IP address
         if: always()
@@ -55,4 +51,5 @@ jobs:
             --group-id sg-0739e6e8005beba1b \
             --protocol tcp \
             --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
             --source-group sg-0739e6e8005beba1b

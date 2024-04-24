@@ -39,25 +39,23 @@ jobs:
           echo "$SSH_KEY" > dushoppaKey.pem
           chmod 600 dushoppaKey.pem
           
-      - name: SSH and deploy to EC2
-        env:
-          HOST: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem $USERNAME@$HOST '
-          cd /var/www/html/dushoppa
-          git pull origin master
-          composer install --no-dev --optimize-autoloader
-          composer dump-autoload --no-dev --optimize-autoloader
-          # deployment commands
-          '
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/html/dushoppa
+            git pull origin master
+            sudo composer install --no-dev --optimize-autoloader
+            sudo composer dump-autoload --no-dev --optimize-autoloader
+            
       - name: Revoke runner IP address
         if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
-            --group-id sg-0739e6e8005beba1b \ # Replace with your security group ID
+            --group-id sg-0739e6e8005beba1b \
             --protocol tcp \
             --port 22 \
-            --source-group sg-0739e6e8005beba1b # Replace with the same security group ID as source
-
-
+            --source-group sg-0739e6e8005beba1b

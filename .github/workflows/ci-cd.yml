@@ -27,10 +27,11 @@ jobs:
       - name: Whitelist runner IP address
         run: |
           aws ec2 authorize-security-group-ingress \
-            --group-id sg-0739e6e8005beba1b # Replace with your security group ID \
+            --group-id sg-0739e6e8005beba1b \ # Replace with your security group ID
             --protocol tcp \
             --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+            --source-group sg-0739e6e8005beba1b # Replace with the same security group ID as source
+
 
       - name: Set up SSH key
         env:
@@ -55,8 +56,9 @@ jobs:
         if: always()
         run: |
           aws ec2 revoke-security-group-ingress \
-            --group-id sg-0739e6e8005beba1b # security group ID \
+            --group-id sg-0739e6e8005beba1b \ # Replace with your security group ID
             --protocol tcp \
             --port 22 \
-            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+            --source-group sg-0739e6e8005beba1b # Replace with the same security group ID as source
+
 

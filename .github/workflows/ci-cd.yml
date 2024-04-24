@@ -42,9 +42,9 @@ jobs:
           chmod 600 dushoppaKey.pem
           ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem ${USERNAME}@${HOST} '
           cd /var/www/html/dushoppa
-          sudo git pull origin master
-          sudo composer install --no-dev --optimize-autoloader
-          sudo composer dump-autoload --no-dev
+          git pull origin master
+          composer install --no-dev --optimize-autoloader
+          composer dump-autoload --no-dev
           # deployment commands
           '
             

@@ -31,7 +31,6 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-            --source-group sg-0739e6e8005beba1b
           
       - name: SSH and deploy to EC2
         env:
@@ -52,4 +51,3 @@ jobs:
             --protocol tcp \
             --port 22 \
             --cidr ${{ steps.ip.outputs.ipv4 }}/32
-            --source-group sg-0739e6e8005beba1b

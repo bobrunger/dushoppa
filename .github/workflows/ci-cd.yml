@@ -31,6 +31,6 @@ jobs:
         script: |
           cd /var/www/html/dushoppa
           git pull origin master
-          composer install --no-dev --optimize-autoloader
-          composer dump-autoload --no-dev --optimize-autoloader
+          sudo composer install --no-dev --optimize-autoloader
+          sudo composer dump-autoload --no-dev --optimize-autoloader
           # Add any other deployment steps here, such as clearing cache or restarting services

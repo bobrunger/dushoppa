@@ -37,7 +37,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
         run: |
           echo "$SSH_KEY" > dushoppaKey.pem
-          chmod 600 dushoppaKey.pem
+          chmod 400 dushoppaKey.pem
           
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
@@ -46,10 +46,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /var/www/html/dushoppa
-            git pull origin master
-            sudo composer install --no-dev --optimize-autoloader
-            sudo composer dump-autoload --no-dev --optimize-autoloader
+            echo "heelo"
             
       - name: Revoke runner IP address
         if: always()

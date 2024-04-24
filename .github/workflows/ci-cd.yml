@@ -27,12 +27,11 @@ jobs:
       - name: Whitelist runner IP address
         run: |
           aws ec2 authorize-security-group-ingress \
-            --group-id sg-0739e6e8005beba1b \ # Replace with your security group ID
+            --group-id sg-0739e6e8005beba1b \
             --protocol tcp \
             --port 22 \
-            --source-group sg-0739e6e8005beba1b # Replace with the same security group ID as source
-
-
+            --source-group sg-0739e6e8005beba1b
+            
       - name: Set up SSH key
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}

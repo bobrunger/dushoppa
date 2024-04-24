@@ -40,8 +40,13 @@ jobs:
         run: |
           echo "$SSH_KEY" > dushoppaKey.pem
           chmod 600 dushoppaKey.pem
-          ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem ${USERNAME}@${HOST}
-          cd /var/
+          ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem ${USERNAME}@${HOST} '
+          cd /var/www/html/dushoppa
+          git pull origin master
+          composer install --no-dev --optimize-autoloader
+          composer dump-autoload --no-dev --optimize-autoloader
+          # deployment commands
+          '
             
       - name: Revoke runner IP address
         if: always()

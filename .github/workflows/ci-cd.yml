@@ -7,30 +7,56 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-north-1 #  AWS region
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
+      - name: Get runner's IP address
+        id: ip
+        uses: haythem/public-ip@v1.2
 
-    - name: Install dependencies
-      run: composer install --no-progress --prefer-dist
+      - name: Whitelist runner IP address
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id sg-0739e6e8005beba1b # Replace with your security group ID \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
+      - name: Set up SSH key
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > dushoppaKey.pem
+          chmod 600 dushoppaKey.pem
+          
+      - name: SSH and deploy to EC2
+        env:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i dushoppaKey.pem $USERNAME@$HOST '
           cd /var/www/html/dushoppa
           git pull origin master
-          sudo composer install --no-dev --optimize-autoloader
-          sudo composer dump-autoload --no-dev --optimize-autoloader
-          # Add any other deployment steps here, such as clearing cache or restarting services
+          composer install --no-dev --optimize-autoloader
+          composer dump-autoload --no-dev --optimize-autoloader
+          # deployment commands
+          '
+      - name: Revoke runner IP address
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id sg-0739e6e8005beba1b # security group ID \
+            --protocol tcp \
+            --port 22 \
+            --cidr ${{ steps.ip.outputs.ipv4 }}/32
+

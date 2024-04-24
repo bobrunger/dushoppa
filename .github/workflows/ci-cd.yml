@@ -44,7 +44,7 @@ jobs:
           cd /var/www/html/dushoppa
           git pull origin master
           composer install --no-dev --optimize-autoloader
-          composer dump-autoload --no-dev --optimize-autoloader
+          composer dump-autoload --no-dev
           # deployment commands
           '
             

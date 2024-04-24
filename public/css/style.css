@@ -3,7 +3,7 @@
 }
 
 .navbar {
-    background-color: var(--brand-color);
+    background-color: #888d79;
 }
 
 .btn-primary {
@@ -35,6 +35,11 @@
 
 .minicart-table img {
     border-radius: 5px;
+}
+
+
+.btn:hover {
+    background-color: #BA1051;
 }
 
 @media (min-width: 768px) {
